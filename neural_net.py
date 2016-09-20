@@ -30,7 +30,7 @@ def one_hot(x,n):
 	o_h[np.arange(len(x)),x] = 1
 	return o_h
 
-n_epochs = 100
+n_epochs = 200
 
 X = T.fmatrix()
 Y = T.fmatrix()
@@ -41,8 +41,8 @@ x_train,y_train,x_valid,y_valid,x_test,y_test = load_mnist()
 y_train = one_hot(y_train,10)
 y_test = one_hot(y_test,10)
 
-w_h = init_weights((784,600))
-w_o = init_weights((600,10))
+w_h = init_weights((784,625))
+w_o = init_weights((625,10))
 
 predy_x = model(X,w_h,w_o)
 y_pred = T.argmax(predy_x,axis=1)
@@ -55,7 +55,6 @@ train = theano.function(inputs = [X,Y] , outputs =cost, updates = updates, allow
 predict = theano.function(inputs = [X], outputs = y_pred ,allow_input_downcast = True)
 
 for i in range(n_epochs):
-	cost = train(x_train,y_train)
-	print cost
-
-print "accuracy = ",100*np.mean(np.argmax(y_test,axis=1)==predict(x_test)),"%"
+	for start, end in zip(range(0, len(x_train), 128), range(128, len(x_train), 128)):
+        	cost = train(x_train[start:end], y_train[start:end])
+	print "accuracy = ",100*np.mean(np.argmax(y_test,axis=1)==predict(x_test)),"%"
